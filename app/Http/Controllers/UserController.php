@@ -21,8 +21,8 @@ class UserController extends Controller
     	 */
 
     	$json = $request -> input('json', null);
-    	params = json_decode($json);
-    	params_array = json_decode($json, true);
+    	$params = json_decode($json);
+    	$params_array = json_decode($json, true);
     	// var_dump( $params-> name ) ;
     	// die();
 
@@ -47,12 +47,13 @@ class UserController extends Controller
          ]);     
             if($validate->fails()){
 
-                $data = array {
+                $data = array(
                     'status' =>  'error',
                     'code' => 404,
                     'message' => 'El usuario no se ha creado',
                     'errors'  => $validate-> errors()
-                };
+                
+                );
                 return response()->json($validate->errors(),400);
             }else {
 
@@ -73,29 +74,23 @@ class UserController extends Controller
                $user->save();
                 
                
-                $data = array {
-                    'status' =>  'success',
-                    'code' => 200,
-                    'message' => 'El usuario no se ha creado correctamente',
-                    'user' => $user
-                };
+                $data = array (
+                    'status'=>  'success',
+                    'code'=> 200,
+                    'message'=> 'El usuario no se ha creado correctamente',
+                    'user'=> $user
+                );
             }
         }else{
-              $data = array {
+              $data = array (
                     'status' =>  'error',
                     'code' => 404,
                     'message' => 'Los datos enviados no son validos',
                     'errors'  => $validate-> errors()
-                };
+              );
         }
 
-       
-
-
-
-    	//TODO:/* Revisar la linea json_decode / json */
-    	
-    	return response() => json($data, $data['code']);
+    	return response()->json($data, $data['code']);
 
     }
 
@@ -106,11 +101,10 @@ class UserController extends Controller
      */
     
     public function login(Request $request) {
-
        $jwtAuth = new \jwtAuth();
 
         $json = $request->input('json', null);
-        $params json_decode($json);
+        $params=  json_decode($json);
         $params_array = json_decode($json, true);
         
         $validate = \Validator::make($params_array,[
@@ -120,14 +114,14 @@ class UserController extends Controller
          ]);     
             if($validate->fails()){
 
-                $signup  = array {
+                $signup  = array (
                     'status' =>  'error',
                     'code' => 404,
                     'message' => 'El usuario no se ha podido loguearse',
                     'errors'  => $validate-> errors()
-                };
+                );
                 return response()->json($validate->errors(),400);
-            }else {
+            } else {
 
                   $pwd = hash('sha256', $params->password);
                   $signup = $jwtAuth->signup($params->email,$pwd);
@@ -136,7 +130,29 @@ class UserController extends Controller
                   }
             }
 
-       return response()->json($signup),200);
+       return response()->json(($signup),200);
+    }
+
+  
+     /**
+      *
+      * Metodo de update, actualizo el token
+      *
+      */
+     
     
+    public function update(Request $request) {
+        $token = $request->header('Authorization');
+        $JwtAuth = new \JwtAuth();
+        $checkToken = $JwtAuth->checkToken($token);
+
+        if($checkToken){
+          echo "<h1>Login correcto</h1>";
+        }else{
+            echo "<h1>Login incorrecto</h1>";
+        }
+        die();
+      }
 
 }
+

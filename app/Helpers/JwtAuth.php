@@ -12,7 +12,7 @@ class JwtAuth {
 
 	 function __construct()
 	 {
-	 	$this-> key = 'esto_es_una_clave_super_secreta-9999'
+	 	$this-> key = 'esto_es_una_clave_super_secreta-9999';
 	 }
 	/**
 	 *
@@ -45,10 +45,10 @@ class JwtAuth {
 				'name' =>  $user-> name,
 				'surname' => $user-> surname,
 				'iat'     => time(),
-				'exp'     =>  time() + (7*24 * 60 * 60)
+				'exp'     => time() + (7*24 * 60 * 60)
 			);
 
-			$jwt = JWT::encode($token, this->$key, 'HS256');
+			$jwt = JWT::decoded($token, $this->$key, 'HS256');
 			$decoded = JWT::decoded($jwt, $this->key, ['HS256']);
 
 				if(is_null($getToken)){
@@ -66,6 +66,12 @@ class JwtAuth {
 		}
 
 	}
+	
+	/**
+	 *
+	 * Chekeo el token 
+	 *
+	 */
 	
 	public function checkToken($jwt,$getIdentity = false){
 		$auth = false;
@@ -91,19 +97,5 @@ class JwtAuth {
 		return response()->json($signup,200);
 
 	}
-
-	public function update(Request $request){
-		$token = $request->header('Authorization');
-		$JwtAuth = new \JwtAuth();
-		$checkToken = $JwtAuth->checkToken($token);
-
-		if($checkToken){
-			echo "<h1>Login correcto</h1>";
-		}else{
-				echo "<h1>Login incorrecto</h1>";
-		}
-		die();
-	}
-	
 
 }
