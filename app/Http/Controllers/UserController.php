@@ -136,22 +136,65 @@ class UserController extends Controller
   
      /**
       *
-      * Metodo de update, actualizo el token
-      *
+      * Metodo de update, actualizo el usuario
+      * Recoger los datos por post
+      * validar los datos
+      * Quitar los campos que no quiero actualizar
+      * Actualizar el usuario de la BD
+      * Devolver el array con resultado
       */
      
     
     public function update(Request $request) {
+
+        /**Comprobar si el usuario está identificado */
         $token = $request->header('Authorization');
         $JwtAuth = new \JwtAuth();
         $checkToken = $JwtAuth->checkToken($token);
 
-        if($checkToken){
-          echo "<h1>Login correcto</h1>";
-        }else{
-            echo "<h1>Login incorrecto</h1>";
+         // Recoger los datos por post
+         $json = $request->input('json', null);
+         $params_array = json_decode($json, true);
+
+        if($checkToken && !empty($params_array)){
+          
+            // sacar el usuario identificado
+
+            $checkToken = $jwtAuth-> checkToken($token, true);
+
+           // Valido los datos
+           $validate = \Validator::make($params_array,[
+            'name' => 'required|alpha',
+            'surname' => 'required|alpha',
+            'email' => 'required|email|unique:users,'.$user->sub
+         ]);
+         
+         //Quitar los campos que no quiero actualizar
+
+         unset($params_array['id']);
+         unset($params_array['role']);
+         unset($params_array['password']);
+         unset($params_array['created_at']);
+         unset($params_array['remember_token']);
+
+        // Actualizar el usuario de la BD
+
+        $user_update = User::where('id', $user->sub)-> update($params_array);
+        $data = array(
+            'code' => 200,
+             'status' => 'success',
+             'user' => $user,
+             'changes' => $params_array
+        );
+
+        }else   {
+         $data = array(
+             'code' => 400,
+             'status' => 'error',
+             'message' => 'El usuario no está identificado.'
+         );
         }
-        die();
+        return response()-> json($data, $data['code']);
       }
 
 }
