@@ -14,3 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+/**
+ *
+ * Rutas del controlador de usuarios
+ *
+ */
+
+
+Route::get('/usuario/pruebas','UserController@register');
