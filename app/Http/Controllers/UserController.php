@@ -181,7 +181,7 @@ class UserController extends Controller
 
         $user_update = User::where('id', $user->sub)-> update($params_array);
         $data = array(
-            'code' => 200,
+             'code' => 200,
              'status' => 'success',
              'user' => $user,
              'changes' => $params_array
@@ -195,6 +195,19 @@ class UserController extends Controller
          );
         }
         return response()-> json($data, $data['code']);
+      }
+      
+      /* Metodo para subir arhivos */
+
+      public function upload(Request $request){
+
+        $data = array(
+            'code' => 400,
+            'status' => 'error',
+            'message' => 'Error al subir imagen'
+        );
+        return response()->json($data, $data['code']);
+
       }
 
 }
