@@ -187,7 +187,7 @@ class UserController extends Controller
              'changes' => $params_array
         );
 
-        }else   {
+        } else   {
          $data = array(
              'code' => 400,
              'status' => 'error',
@@ -199,15 +199,35 @@ class UserController extends Controller
       
       /* Metodo para subir arhivos */
 
+      /**
+      *
+      * Recoger datos de la peticiòn
+      *Guardar la imagen
+      */
       public function upload(Request $request){
 
-        $data = array(
-            'code' => 400,
-            'status' => 'error',
-            'message' => 'Error al subir imagen'
-        );
-        return response()->json($data, $data['code']);
+        $image = $request->file('file0');
 
+        if($imagen){
+            $image_name = time().$image->getClientOriginalName();
+            \Storage::disk('users')->put($image_name, \File::get($image));
+
+            $data = array(
+                'code' => 200,
+                'status' => 'success',
+                'image' => $image_name
+            );
+        } else {
+            
+            /* Devolver el resultado */
+            $data = array(
+                'code' => 400,
+                'status' => 'error',
+                'message' => 'Error al subir imagen'
+            );
+        }
+        return response()->json($data, $data['code']);
+        
       }
 
 }
