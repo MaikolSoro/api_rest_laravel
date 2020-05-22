@@ -30,3 +30,8 @@ Route::put('/api/user/update', 'UserController@update');
 Route::post('/api/user/upload','UserController@upload')->middlewre(\ApiAuthMiddleware::class);
 Route::get('/api/user/avatar/{filenmae}','UserController@getImage');
 Route::get('/api/user/detail/{id}', 'UserController@detail');
+
+
+// Rutas del controlador de categorias
+
+Route::resource('/api/category', 'CategoryController');
