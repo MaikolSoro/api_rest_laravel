@@ -139,11 +139,12 @@ class PostController extends Controller
                 unset($params_array['user']);
 
             //Actualizar el registro(categoria)
-            $post = Post:: where('id', $id) ->update($params_array);
+            $post = Post:: where('id', $id) ->updateOrCreate($params_array);
             $data = [
                 'code'=> 200,
                 'status' => 'success',
-                'post' => $params_array
+                'post' => $post,
+                'changes' => $params_array
             ];
         } 
          //Devolver respuesta
