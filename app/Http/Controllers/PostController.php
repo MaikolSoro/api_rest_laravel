@@ -66,7 +66,7 @@ class PostController extends Controller
                 // Guardar el articulo
                 if($validate-> fails()) {
                     $data = [
-                        'code' => 400,
+                        'code' => 404,
                         'status' => 'error',
                         'message' => 'No se ha guardado el articulo, faltan datos'
         
@@ -90,7 +90,7 @@ class PostController extends Controller
             }
         } else {
             $data = [
-                'code' => 400,
+                'code' => 404,
                 'status' => 'error',
                 'message' => 'Envia los datos correctamente.'
 
@@ -113,7 +113,7 @@ class PostController extends Controller
 
         // Datos para devolver
         $data = [
-            'code' => 400,
+            'code' => 404,
             'status' => 'error',
             'message' => 'Envia los datos correctamente.'
 
@@ -150,5 +150,33 @@ class PostController extends Controller
          //Devolver respuesta
         return response() ->json($data, $data['code']);
 
+    }
+
+    /*=============================================
+                 Eliminar un post            
+     =============================================*/
+    public function delete($id, Request $request) {
+
+        // comprobar si existe el registro
+        $post = Post::find($id);
+        if(!empty($post)){
+            //Borrarlo
+            $post -> delete();
+            // Devolver algo
+
+            $data = [
+                'code'=> 200,
+                'status' => 'success',
+                'post' => $post
+            ];
+        } else {
+            $data = [
+                'code'=> 404,
+                'status' => 'error',
+                'message' => 'El post no existe'
+            ];
+        }
+       
+        return response() ->json($data, $data['code']);
     }
 }
