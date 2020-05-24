@@ -52,9 +52,7 @@ class PostController extends Controller
 
         if(!empty($params_array)) {
                 // Conseguir usuario identificado
-                $jwtAuth = new JwtAuth();
-                $token = $request-> header('Authorization', null);
-                $user = $jwtAuth->checkToken($token, true);
+                $user = $this->getIdentity($request);
 
                 // Validar los datos
                 $validate = \Validator::make($params_array,[
@@ -138,14 +136,26 @@ class PostController extends Controller
                 unset($params_array['created_at']);
                 unset($params_array['user']);
 
+                $user = $this->getIdentity($request);
             //Actualizar el registro(categoria)
-            $post = Post:: where('id', $id) ->updateOrCreate($params_array);
-            $data = [
-                'code'=> 200,
-                'status' => 'success',
-                'post' => $post,
-                'changes' => $params_array
-            ];
+            $post = Post::where('id', $id)->where('user_id', $user->sub)-> first();
+
+            if(!empty($post) && is_object($post)) {
+
+                $post->update($params_array);
+                $data = [
+                    'code'=> 200,
+                    'status' => 'success',
+                    'post' => $post,
+                    'changes' => $params_array
+                ];
+            }
+            // $where = [
+            //     'id' => $id,
+            //     'user_id' => $user->sub
+            // ];
+            // $post = Post:: updateOrCreate($where, $params_array);
+           
         } 
          //Devolver respuesta
         return response() ->json($data, $data['code']);
@@ -157,8 +167,11 @@ class PostController extends Controller
      =============================================*/
     public function delete($id, Request $request) {
 
+      $user = $this->getIdentity($request);
+
         // comprobar si existe el registro
-        $post = Post::find($id);
+        $post = Post::where('id', $id)->where('user_id', $user->sub)-> first();
+
         if(!empty($post)){
             //Borrarlo
             $post -> delete();
@@ -178,5 +191,14 @@ class PostController extends Controller
         }
        
         return response() ->json($data, $data['code']);
+    }
+
+    private function getIdentity($request){
+
+        $jwtAuth = new JwtAuth();
+        $token = $request-> header('Authorization', null);
+        $user = $jwtAuth->checkToken($token, true);
+
+        return $user;
     }
 }
