@@ -9,7 +9,7 @@ use App\Helpers\JwtAuth;
 class PostController extends Controller
 {
      public function _construc() {
-        $this-> middleware('api.auth', ['except' => ['index', 'show', 'getImage']]);
+        $this-> middleware('api.auth', ['except' => ['index', 'show', 'getImage', 'getPostsByCategory', 'getPostsByUser']]);
     }
 
     public function index() {
@@ -250,5 +250,33 @@ class PostController extends Controller
         }
         // MOSTRAR EL ERROR
         return response() ->json($data, $data['code']);
+    }
+
+    /**
+    *
+    * Listar articulos por categoria
+    *
+    */
+    public function getPostsByCategory($id) {
+        $posts = Post::where('category_id', $id)-> get();
+
+        return response() ->json([
+
+        'status' => 'success',
+        'posts' => $posts
+        ], 200);
+    }
+
+    /*=============================================
+     =    Listar los articulos por usuarios         =
+    =============================================*/
+    
+    public function getPostsByUser($id) {
+        $posts = Post::where('user_id', $id) ->get();
+        return response() ->json([
+
+            'status' => 'success',
+            'posts' => $posts
+            ], 200);
     }
 }
