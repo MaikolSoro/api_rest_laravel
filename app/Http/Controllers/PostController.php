@@ -8,6 +8,7 @@ use App\Post;
 use App\Helpers\JwtAuth;
 class PostController extends Controller
 {
+    /* Constructor  */
      public function _construc() {
         $this-> middleware('api.auth', ['except' => ['index', 'show', 'getImage', 'getPostsByCategory', 'getPostsByUser']]);
     }
@@ -193,6 +194,7 @@ class PostController extends Controller
         return response() ->json($data, $data['code']);
     }
 
+    
     private function getIdentity($request){
 
         $jwtAuth = new JwtAuth();
@@ -202,6 +204,11 @@ class PostController extends Controller
         return $user;
     }
 
+    /**
+    *
+    * Subir archivos o imagenes
+    *
+    */
     public function upload(Request $request) {
         // Recoger la imagen de la petición
         $image= $request-> file('file0');
